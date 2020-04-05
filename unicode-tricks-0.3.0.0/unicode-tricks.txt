@@ -7,7 +7,7 @@
 --   A package that makes rendering of frames, blocks, subscript and
 --   superscript more convenient.
 @package unicode-tricks
-@version 0.2.0.0
+@version 0.3.0.0
 
 
 -- | Unicode has 2-by-2 blocks, this module aims to make it more convenient
@@ -125,6 +125,222 @@ instance Data.Foldable.Foldable Data.Char.Braille.Braille6
 instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Char.Braille.Braille6 a)
 instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Braille.Braille a)
 instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Braille.Braille6 a)
+
+
+-- | One can make use of a <a>block 2600</a> and <a>block 1fa00</a> of
+--   Unicode characters to render chess characters. One can render chess
+--   characters as <i>netral</i>, <i>white</i>, or <i>black</i> pieces, for
+--   such pieces one can render these rotated by 0, 90, 180 and 270
+--   degrees. Knights can be rendered on 45, 135, 225 and 315 degrees as
+--   well. Furthermore unicode allows to render an <i>equihopper</i>, and
+--   special variants like a <i>knight-queen</i>, <i>knight-rook</i>, and
+--   <i>knight-bishop</i>.
+--   
+--   The module contains pattern synonyms for names that are often given to
+--   the pieces.
+module Data.Char.Chess
+
+-- | The color of a chess piece, this can for most pieces be <a>Black</a>,
+--   <a>White</a>, or <a>Neutral</a>.
+data ChessColor
+
+-- | <i>White</i> color.
+White :: ChessColor
+
+-- | <i>Black</i> color.
+Black :: ChessColor
+
+-- | Neutral chess pieces, sometimes depicted half <i>white</i> and half
+--   <i>black</i>.
+Neutral :: ChessColor
+
+-- | A data type that defined binary colors (<a>BWhite</a>, and
+--   <a>BBlack</a>), this is used for special chess pieces like a <i>knight
+--   queen</i>, <i>knight rook</i>, and <i>knight bishop</i> that only have
+--   no neutral color in unicode.
+data ChessColorBinary
+
+-- | <i>White</i> color.
+BWhite :: ChessColorBinary
+
+-- | <i>Black</i> color.
+BBlack :: ChessColorBinary
+
+-- | The type of chess pieces. Unicode includes an <a>Equihopper</a> as
+--   piece as well.
+data ChessPieceType
+
+-- | The <i>knight</i> chess piece.
+King :: ChessPieceType
+
+-- | The <i>knight</i> chess piece.
+Queen :: ChessPieceType
+
+-- | The <i>knight</i> chess piece.
+Rook :: ChessPieceType
+
+-- | The <i>knight</i> chess piece.
+Bishop :: ChessPieceType
+
+-- | The <i>knight</i> chess piece.
+Knight :: ChessPieceType
+
+-- | The <i>knigat</i> chess piece.
+Pawn :: ChessPieceType
+
+-- | The <i>equihopper</i> chess piece.
+Equihopper :: ChessPieceType
+
+-- | Hybrid chess pieces like the <i>knight-queen</i>, <i>knight-rook</i>
+--   and <i>knight-bishop</i>.
+data ChessHybridType
+
+-- | The <i>knight-queen</i> chess piece.
+KnightQueen :: ChessHybridType
+
+-- | The <i>knight-rook</i> chess piece.
+KnightRook :: ChessHybridType
+
+-- | The <i>knight-bishop</i> chess piece.
+KnightBishop :: ChessHybridType
+
+-- | Chess pieces that can be represented in Unicode. These are the
+--   <i>king</i>, <i>queen</i>, <i>rook</i>, <i>bishop</i>, <i>knight</i>,
+--   <i>pawn</i>, and <i>equihopper</i> over 0, 90, 180, and 270 degrees;
+--   and the <i>knight</i> over <i>45</i>, <i>135</i>, <i>225</i>, and
+--   <i>315</i> degrees in <a>Black</a>, <a>White</a> and <a>Neutral</a>. .
+--   Furthermore one can draw a <i>knight-queen</i>, <i>knight-rook</i>,
+--   and <i>knight-bishop</i> pieces can be drawn without rotation and only
+--   in <a>BBlack</a> or <a>BWhite</a>.
+data ChessPiece
+
+-- | Standard pieces drawn in <i>black</i>, <i>white</i>, or <i>neutral</i>
+--   and with rotation.
+Chess90 :: ChessColor -> ChessPieceType -> Rotate90 -> ChessPiece
+
+-- | <i>Knights</i> have unicode characters to render these rotated over
+--   <i>45</i>, <i>135</i>, <i>225</i> and <i>315</i> degrees.
+Chess45Knight :: ChessColor -> Rotate45 -> ChessPiece
+
+-- | Hybrid chess pieces can only be rendered in <a>BBlack</a> and
+--   <a>BWhite</a>.
+ChessHybrid :: ChessHybridType -> ChessColorBinary -> ChessPiece
+
+-- | Possible rotations of the pieces. Most pieces can be rotated 0, 90,
+--   180, and 270 degrees.
+data Rotate90
+
+-- | No rotation.
+R0 :: Rotate90
+
+-- | Rotation over <i>90</i> degrees.
+R90 :: Rotate90
+
+-- | Rotation over <i>180</i> degrees.
+R180 :: Rotate90
+
+-- | Rotation over <i>270</i> degrees.
+R270 :: Rotate90
+
+-- | Extra rotations that can be performed for knight chess pieces.
+data Rotate45
+
+-- | Rotation over <i>45</i> degrees.
+R45 :: Rotate45
+
+-- | Rotation over <i>135</i> degrees.
+R135 :: Rotate45
+
+-- | Rotation over <i>225</i> degrees.
+R225 :: Rotate45
+
+-- | Rotation over <i>315</i> degrees.
+R315 :: Rotate45
+
+-- | Convert the given <a>ChessPiece</a> to the corresponding unicode
+--   character.
+chessPiece :: ChessPiece -> Char
+
+-- | A <i>grasshopper</i> is a <i>queen</i> rotated over 180 degrees.
+pattern Grasshopper :: ChessColor -> ChessPiece
+
+-- | A <i>Nightrider</i> is a <i>knight</i> rotated over 180 degrees.
+pattern Nightrider :: ChessColor -> ChessPiece
+
+-- | An <i>amazon</i> is alterative name for a <i>knight-queen</i>.
+pattern Amazon :: ChessColorBinary -> ChessPiece
+
+-- | A <i>terror</i> is alterative name for a <i>knight-queen</i>.
+pattern Terror :: ChessColorBinary -> ChessPiece
+
+-- | An <i>omnipotent queen</i> is alterative name for a
+--   <i>knight-queen</i>.
+pattern OmnipotentQueen :: ChessColorBinary -> ChessPiece
+
+-- | A <i>superqueen</i> is alterative name for a <i>knight-queen</i>.
+pattern Superqueen :: ChessColorBinary -> ChessPiece
+
+-- | A <i>chancellor</i> is alterative name for a <i>knight-rook</i>.
+pattern Chancellor :: ChessColorBinary -> ChessPiece
+
+-- | A <i>marshall</i> is alterative name for a <i>knight-rook</i>.
+pattern Marshall :: ChessColorBinary -> ChessPiece
+
+-- | An <i>empress</i> is alterative name for a <i>knight-rook</i>.
+pattern Empress :: ChessColorBinary -> ChessPiece
+
+-- | A <i>cardinal</i> is alterative name for a <i>knight-bishop</i>.
+pattern Cardinal :: ChessColorBinary -> ChessPiece
+
+-- | A <i>princess</i> is alterative name for a <i>knight-bishop</i>.
+pattern Princess :: ChessColorBinary -> ChessPiece
+instance GHC.Show.Show Data.Char.Chess.ChessPiece
+instance GHC.Read.Read Data.Char.Chess.ChessPiece
+instance GHC.Classes.Ord Data.Char.Chess.ChessPiece
+instance GHC.Classes.Eq Data.Char.Chess.ChessPiece
+instance GHC.Show.Show Data.Char.Chess.ChessHybridType
+instance GHC.Read.Read Data.Char.Chess.ChessHybridType
+instance GHC.Classes.Ord Data.Char.Chess.ChessHybridType
+instance GHC.Classes.Eq Data.Char.Chess.ChessHybridType
+instance GHC.Enum.Enum Data.Char.Chess.ChessHybridType
+instance GHC.Enum.Bounded Data.Char.Chess.ChessHybridType
+instance GHC.Show.Show Data.Char.Chess.Rotate45
+instance GHC.Read.Read Data.Char.Chess.Rotate45
+instance GHC.Classes.Ord Data.Char.Chess.Rotate45
+instance GHC.Classes.Eq Data.Char.Chess.Rotate45
+instance GHC.Enum.Enum Data.Char.Chess.Rotate45
+instance GHC.Enum.Bounded Data.Char.Chess.Rotate45
+instance GHC.Show.Show Data.Char.Chess.Rotate90
+instance GHC.Read.Read Data.Char.Chess.Rotate90
+instance GHC.Classes.Ord Data.Char.Chess.Rotate90
+instance GHC.Classes.Eq Data.Char.Chess.Rotate90
+instance GHC.Enum.Enum Data.Char.Chess.Rotate90
+instance GHC.Enum.Bounded Data.Char.Chess.Rotate90
+instance GHC.Show.Show Data.Char.Chess.ChessPieceType
+instance GHC.Read.Read Data.Char.Chess.ChessPieceType
+instance GHC.Classes.Ord Data.Char.Chess.ChessPieceType
+instance GHC.Classes.Eq Data.Char.Chess.ChessPieceType
+instance GHC.Enum.Enum Data.Char.Chess.ChessPieceType
+instance GHC.Enum.Bounded Data.Char.Chess.ChessPieceType
+instance GHC.Show.Show Data.Char.Chess.ChessColor
+instance GHC.Read.Read Data.Char.Chess.ChessColor
+instance GHC.Classes.Ord Data.Char.Chess.ChessColor
+instance GHC.Classes.Eq Data.Char.Chess.ChessColor
+instance GHC.Enum.Enum Data.Char.Chess.ChessColor
+instance GHC.Enum.Bounded Data.Char.Chess.ChessColor
+instance GHC.Show.Show Data.Char.Chess.ChessColorBinary
+instance GHC.Read.Read Data.Char.Chess.ChessColorBinary
+instance GHC.Classes.Ord Data.Char.Chess.ChessColorBinary
+instance GHC.Classes.Eq Data.Char.Chess.ChessColorBinary
+instance GHC.Enum.Enum Data.Char.Chess.ChessColorBinary
+instance GHC.Enum.Bounded Data.Char.Chess.ChessColorBinary
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.ChessPiece
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.ChessHybridType
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.Rotate45
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.Rotate90
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.ChessPieceType
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.ChessColor
+instance Test.QuickCheck.Arbitrary.Arbitrary Data.Char.Chess.ChessColorBinary
 
 
 -- | A frame is represented as a pair of horizontal and vertical lines.
