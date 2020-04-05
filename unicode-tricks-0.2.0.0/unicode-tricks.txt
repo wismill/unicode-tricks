@@ -7,7 +7,7 @@
 --   A package that makes rendering of frames, blocks, subscript and
 --   superscript more convenient.
 @package unicode-tricks
-@version 0.1.0.0
+@version 0.2.0.0
 
 
 -- | Unicode has 2-by-2 blocks, this module aims to make it more convenient
@@ -58,6 +58,73 @@ instance GHC.Base.Applicative Data.Char.Block.Block
 instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Block.Block a)
 instance GHC.Base.Applicative Data.Char.Block.Row
 instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Block.Row a)
+
+
+-- | Unicode has a Braille segment for Braille with six dot cells, and a
+--   segment for Braille with eight dot cells, this module aims to make it
+--   more convenient to render such characters.
+module Data.Char.Braille
+
+-- | A datastructure to render Braille patterns with six dots cells.
+data Braille6 a
+Braille6 :: Row a -> Row a -> Row a -> Braille6 a
+
+-- | The state of the top row of the Braille character.
+[top] :: Braille6 a -> Row a
+
+-- | The state of the middle row of the Braille character.
+[middle] :: Braille6 a -> Row a
+
+-- | The state of the bottom row of the Braille character.
+[bottom] :: Braille6 a -> Row a
+
+-- | A datastructure to render Braille patterns with eight dots cells.
+data Braille a
+Braille :: Row a -> Row a -> Row a -> Row a -> Braille a
+
+-- | The state of the top row of the Braille character.
+[row1] :: Braille a -> Row a
+
+-- | The state of the second row of the Braille character.
+[row2] :: Braille a -> Row a
+
+-- | The state of the third row of the Braille character.
+[row3] :: Braille a -> Row a
+
+-- | The state of the bottom row of the Braille character.
+[row4] :: Braille a -> Row a
+
+-- | Convert a <a>Braille6</a> value to a <a>Braille</a> character, by
+--   putting in a given value at the two values at the bottom row.
+toBraille' :: a -> Braille6 a -> Braille a
+
+-- | Convert a <a>Braille6</a> value to a <a>Braille6</a> character by
+--   setting the bottom row with two <a>False</a> values.
+toBraille :: Braille6 Bool -> Braille Bool
+
+-- | Convert the given <a>Braille6</a> value to a unicode character
+--   representing this Braille value.
+braille6 :: Braille6 Bool -> Char
+
+-- | Convert the given <a>Braille</a> value to a unicode character
+--   representing this braille value.
+braille :: Braille Bool -> Char
+instance Data.Traversable.Traversable Data.Char.Braille.Braille
+instance GHC.Show.Show a => GHC.Show.Show (Data.Char.Braille.Braille a)
+instance GHC.Read.Read a => GHC.Read.Read (Data.Char.Braille.Braille a)
+instance GHC.Classes.Ord a => GHC.Classes.Ord (Data.Char.Braille.Braille a)
+instance GHC.Base.Functor Data.Char.Braille.Braille
+instance Data.Foldable.Foldable Data.Char.Braille.Braille
+instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Char.Braille.Braille a)
+instance Data.Traversable.Traversable Data.Char.Braille.Braille6
+instance GHC.Show.Show a => GHC.Show.Show (Data.Char.Braille.Braille6 a)
+instance GHC.Read.Read a => GHC.Read.Read (Data.Char.Braille.Braille6 a)
+instance GHC.Classes.Ord a => GHC.Classes.Ord (Data.Char.Braille.Braille6 a)
+instance GHC.Base.Functor Data.Char.Braille.Braille6
+instance Data.Foldable.Foldable Data.Char.Braille.Braille6
+instance GHC.Classes.Eq a => GHC.Classes.Eq (Data.Char.Braille.Braille6 a)
+instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Braille.Braille a)
+instance Test.QuickCheck.Arbitrary.Arbitrary a => Test.QuickCheck.Arbitrary.Arbitrary (Data.Char.Braille.Braille6 a)
 
 
 -- | A frame is represented as a pair of horizontal and vertical lines.
