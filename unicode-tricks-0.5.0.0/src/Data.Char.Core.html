@@ -1,0 +1,756 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span id="%24con2tag_CfGwovo7Brf3t98Q2S1bny"><span id="%24maxtag_CfGwovo7Brf3t98Q2S1bny"><span id="%24tag2con_CfGwovo7Brf3t98Q2S1bny"><span id="%24con2tag_B78vuxdI5Go8ARKcphIbhp"><span id="%24maxtag_B78vuxdI5Go8ARKcphIbhp"><span id="%24tag2con_B78vuxdI5Go8ARKcphIbhp"><span id="%24con2tag_6AyfpfLkz1O7VdcigsEYXp"><span id="%24maxtag_6AyfpfLkz1O7VdcigsEYXp"><span id="%24tag2con_6AyfpfLkz1O7VdcigsEYXp"></span></span></span></span></span></span></span></span></span><span class="hs-pragma">{-# LANGUAGE DeriveFoldable, DeriveFunctor, DeriveTraversable, Safe #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">{-|
+Module      : Data.Char.Core
+Description : A module that defines data structures used in the other modules.
+Maintainer  : hapytexeu+gh@gmail.com
+Stability   : experimental
+Portability : POSIX
+
+This module defines data structures that are used in other modules, for example to rotate the characters.
+-}</span><span>
+</span><span id="line-12"></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Data.Char.Core</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-14"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Possible rotations</span></span><span>
+</span><span id="line-15"></span><span>    </span><span class="annot"><a href="Data.Char.Core.html#Orientation"><span class="hs-identifier">Orientation</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Data.Char.Core.html#Horizontal"><span class="hs-identifier">Horizontal</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Vertical"><span class="hs-identifier">Vertical</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Rotate90"><span class="hs-identifier">Rotate90</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Data.Char.Core.html#R0"><span class="hs-identifier">R0</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#R90"><span class="hs-identifier">R90</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#R180"><span class="hs-identifier">R180</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#R270"><span class="hs-identifier">R270</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Rotated objects</span></span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier">Oriented</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier">Oriented</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#oobject"><span class="hs-identifier">oobject</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#orientation"><span class="hs-identifier">orientation</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span>    </span><span class="annot"><span class="hs-comment">-- * Ligating</span></span><span>
+</span><span id="line-20"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier">Ligate</span></a></span><span class="hs-special">(</span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier">Ligate</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#NoLigate"><span class="hs-identifier">NoLigate</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#ligate"><span class="hs-identifier">ligate</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="Data.Char.Core.html#ligateF"><span class="hs-identifier">ligateF</span></a></span><span>
+</span><span id="line-21"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-22"></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Default</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Default</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">def</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Test.QuickCheck.Arbitrary</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Arbitrary</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">arbitrary</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">Arbitrary1</span></span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">liftArbitrary</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">arbitrary1</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">arbitraryBoundedEnum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- | The possible orientations of a unicode character, these can be</span><span>
+</span><span id="line-28"></span><span class="hs-comment">-- /horizontal/, or /vertical/.</span><span>
+</span><span id="line-29"></span><span class="hs-keyword">data</span><span> </span><span id="Orientation"><span class="annot"><a href="Data.Char.Core.html#Orientation"><span class="hs-identifier hs-var">Orientation</span></a></span></span><span>
+</span><span id="line-30"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Horizontal"><span class="annot"><a href="Data.Char.Core.html#Horizontal"><span class="hs-identifier hs-var">Horizontal</span></a></span></span><span> </span><span class="hs-comment">-- ^ /Horizontal/ orientation.</span><span>
+</span><span id="line-31"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="Vertical"><span class="annot"><a href="Data.Char.Core.html#Vertical"><span class="hs-identifier hs-var">Vertical</span></a></span></span><span> </span><span class="hs-comment">-- ^ /Vertical/ orientation.</span><span>
+</span><span id="line-32"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679101941"><span id="local-6989586621679101943"><span class="annot"><span class="annottext">Orientation
+Orientation -&gt; Orientation -&gt; Bounded Orientation
+forall a. a -&gt; a -&gt; Bounded a
+maxBound :: Orientation
+$cmaxBound :: Orientation
+minBound :: Orientation
+$cminBound :: Orientation
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101924"><span id="local-6989586621679101926"><span id="local-6989586621679101928"><span id="local-6989586621679101930"><span id="local-6989586621679101932"><span id="local-6989586621679101934"><span id="local-6989586621679101936"><span id="local-6989586621679101938"><span class="annot"><span class="annottext">Int -&gt; Orientation
+Orientation -&gt; Int
+Orientation -&gt; [Orientation]
+Orientation -&gt; Orientation
+Orientation -&gt; Orientation -&gt; [Orientation]
+Orientation -&gt; Orientation -&gt; Orientation -&gt; [Orientation]
+(Orientation -&gt; Orientation)
+-&gt; (Orientation -&gt; Orientation)
+-&gt; (Int -&gt; Orientation)
+-&gt; (Orientation -&gt; Int)
+-&gt; (Orientation -&gt; [Orientation])
+-&gt; (Orientation -&gt; Orientation -&gt; [Orientation])
+-&gt; (Orientation -&gt; Orientation -&gt; [Orientation])
+-&gt; (Orientation -&gt; Orientation -&gt; Orientation -&gt; [Orientation])
+-&gt; Enum Orientation
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: Orientation -&gt; Orientation -&gt; Orientation -&gt; [Orientation]
+$cenumFromThenTo :: Orientation -&gt; Orientation -&gt; Orientation -&gt; [Orientation]
+enumFromTo :: Orientation -&gt; Orientation -&gt; [Orientation]
+$cenumFromTo :: Orientation -&gt; Orientation -&gt; [Orientation]
+enumFromThen :: Orientation -&gt; Orientation -&gt; [Orientation]
+$cenumFromThen :: Orientation -&gt; Orientation -&gt; [Orientation]
+enumFrom :: Orientation -&gt; [Orientation]
+$cenumFrom :: Orientation -&gt; [Orientation]
+fromEnum :: Orientation -&gt; Int
+$cfromEnum :: Orientation -&gt; Int
+toEnum :: Int -&gt; Orientation
+$ctoEnum :: Int -&gt; Orientation
+pred :: Orientation -&gt; Orientation
+$cpred :: Orientation -&gt; Orientation
+succ :: Orientation -&gt; Orientation
+$csucc :: Orientation -&gt; Orientation
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101919"><span id="local-6989586621679101921"><span class="annot"><span class="annottext">Orientation -&gt; Orientation -&gt; Bool
+(Orientation -&gt; Orientation -&gt; Bool)
+-&gt; (Orientation -&gt; Orientation -&gt; Bool) -&gt; Eq Orientation
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Orientation -&gt; Orientation -&gt; Bool
+$c/= :: Orientation -&gt; Orientation -&gt; Bool
+== :: Orientation -&gt; Orientation -&gt; Bool
+$c== :: Orientation -&gt; Orientation -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101903"><span id="local-6989586621679101905"><span id="local-6989586621679101907"><span id="local-6989586621679101909"><span id="local-6989586621679101911"><span id="local-6989586621679101913"><span id="local-6989586621679101915"><span class="annot"><span class="annottext">Eq Orientation
+Eq Orientation =&gt;
+(Orientation -&gt; Orientation -&gt; Ordering)
+-&gt; (Orientation -&gt; Orientation -&gt; Bool)
+-&gt; (Orientation -&gt; Orientation -&gt; Bool)
+-&gt; (Orientation -&gt; Orientation -&gt; Bool)
+-&gt; (Orientation -&gt; Orientation -&gt; Bool)
+-&gt; (Orientation -&gt; Orientation -&gt; Orientation)
+-&gt; (Orientation -&gt; Orientation -&gt; Orientation)
+-&gt; Ord Orientation
+Orientation -&gt; Orientation -&gt; Bool
+Orientation -&gt; Orientation -&gt; Ordering
+Orientation -&gt; Orientation -&gt; Orientation
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Orientation -&gt; Orientation -&gt; Orientation
+$cmin :: Orientation -&gt; Orientation -&gt; Orientation
+max :: Orientation -&gt; Orientation -&gt; Orientation
+$cmax :: Orientation -&gt; Orientation -&gt; Orientation
+&gt;= :: Orientation -&gt; Orientation -&gt; Bool
+$c&gt;= :: Orientation -&gt; Orientation -&gt; Bool
+&gt; :: Orientation -&gt; Orientation -&gt; Bool
+$c&gt; :: Orientation -&gt; Orientation -&gt; Bool
+&lt;= :: Orientation -&gt; Orientation -&gt; Bool
+$c&lt;= :: Orientation -&gt; Orientation -&gt; Bool
+&lt; :: Orientation -&gt; Orientation -&gt; Bool
+$c&lt; :: Orientation -&gt; Orientation -&gt; Bool
+compare :: Orientation -&gt; Orientation -&gt; Ordering
+$ccompare :: Orientation -&gt; Orientation -&gt; Ordering
+$cp1Ord :: Eq Orientation
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101894"><span id="local-6989586621679101896"><span id="local-6989586621679101898"><span id="local-6989586621679101900"><span class="annot"><span class="annottext">ReadPrec [Orientation]
+ReadPrec Orientation
+Int -&gt; ReadS Orientation
+ReadS [Orientation]
+(Int -&gt; ReadS Orientation)
+-&gt; ReadS [Orientation]
+-&gt; ReadPrec Orientation
+-&gt; ReadPrec [Orientation]
+-&gt; Read Orientation
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Orientation]
+$creadListPrec :: ReadPrec [Orientation]
+readPrec :: ReadPrec Orientation
+$creadPrec :: ReadPrec Orientation
+readList :: ReadS [Orientation]
+$creadList :: ReadS [Orientation]
+readsPrec :: Int -&gt; ReadS Orientation
+$creadsPrec :: Int -&gt; ReadS Orientation
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101887"><span id="local-6989586621679101889"><span id="local-6989586621679101891"><span class="annot"><span class="annottext">Int -&gt; Orientation -&gt; ShowS
+[Orientation] -&gt; ShowS
+Orientation -&gt; String
+(Int -&gt; Orientation -&gt; ShowS)
+-&gt; (Orientation -&gt; String)
+-&gt; ([Orientation] -&gt; ShowS)
+-&gt; Show Orientation
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Orientation] -&gt; ShowS
+$cshowList :: [Orientation] -&gt; ShowS
+show :: Orientation -&gt; String
+$cshow :: Orientation -&gt; String
+showsPrec :: Int -&gt; Orientation -&gt; ShowS
+$cshowsPrec :: Int -&gt; Orientation -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- | A data type that specifies that an item has been given an orientation.</span><span>
+</span><span id="line-35"></span><span class="hs-keyword">data</span><span> </span><span id="Oriented"><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier hs-var">Oriented</span></a></span></span><span> </span><span id="local-6989586621679101980"><span class="annot"><a href="#local-6989586621679101980"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-36"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Oriented"><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier hs-var">Oriented</span></a></span></span><span> </span><span class="hs-special">{</span><span>
+</span><span id="line-37"></span><span>    </span><span id="oobject"><span class="annot"><span class="annottext">Oriented a -&gt; a
+</span><a href="Data.Char.Core.html#oobject"><span class="hs-identifier hs-var hs-var">oobject</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="#local-6989586621679101980"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-comment">-- ^ The object that is oriented.</span><span>
+</span><span id="line-38"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="orientation"><span class="annot"><span class="annottext">Oriented a -&gt; Orientation
+</span><a href="Data.Char.Core.html#orientation"><span class="hs-identifier hs-var hs-var">orientation</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Orientation"><span class="hs-identifier hs-type">Orientation</span></a></span><span> </span><span class="hs-comment">-- ^ The oriented of the oriented object.</span><span>
+</span><span id="line-39"></span><span>  </span><span class="hs-special">}</span><span> </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679101882"><span id="local-6989586621679101884"><span class="annot"><span class="annottext">Oriented a -&gt; Oriented a -&gt; Bool
+(Oriented a -&gt; Oriented a -&gt; Bool)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Bool) -&gt; Eq (Oriented a)
+forall a. Eq a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Oriented a -&gt; Oriented a -&gt; Bool
+$c/= :: forall a. Eq a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+== :: Oriented a -&gt; Oriented a -&gt; Bool
+$c== :: forall a. Eq a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101848"><span id="local-6989586621679101850"><span id="local-6989586621679101852"><span id="local-6989586621679101854"><span id="local-6989586621679101856"><span id="local-6989586621679101858"><span id="local-6989586621679101860"><span id="local-6989586621679101862"><span id="local-6989586621679101864"><span id="local-6989586621679101866"><span id="local-6989586621679101868"><span id="local-6989586621679101870"><span id="local-6989586621679101872"><span id="local-6989586621679101874"><span id="local-6989586621679101876"><span id="local-6989586621679101878"><span id="local-6989586621679101880"><span class="annot"><span class="annottext">Oriented a -&gt; Bool
+(a -&gt; m) -&gt; Oriented a -&gt; m
+(a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+(forall m. Monoid m =&gt; Oriented m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Oriented a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Oriented a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a)
+-&gt; (forall a. Oriented a -&gt; [a])
+-&gt; (forall a. Oriented a -&gt; Bool)
+-&gt; (forall a. Oriented a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; Oriented a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; Oriented a -&gt; a)
+-&gt; (forall a. Ord a =&gt; Oriented a -&gt; a)
+-&gt; (forall a. Num a =&gt; Oriented a -&gt; a)
+-&gt; (forall a. Num a =&gt; Oriented a -&gt; a)
+-&gt; Foldable Oriented
+forall a. Eq a =&gt; a -&gt; Oriented a -&gt; Bool
+forall a. Num a =&gt; Oriented a -&gt; a
+forall a. Ord a =&gt; Oriented a -&gt; a
+forall m. Monoid m =&gt; Oriented m -&gt; m
+forall a. Oriented a -&gt; Bool
+forall a. Oriented a -&gt; Int
+forall a. Oriented a -&gt; [a]
+forall a. (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a
+forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Oriented a -&gt; m
+forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+forall (t :: * -&gt; *).
+(forall m. Monoid m =&gt; t m -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall m a. Monoid m =&gt; (a -&gt; m) -&gt; t a -&gt; m)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. (a -&gt; a -&gt; a) -&gt; t a -&gt; a)
+-&gt; (forall a. t a -&gt; [a])
+-&gt; (forall a. t a -&gt; Bool)
+-&gt; (forall a. t a -&gt; Int)
+-&gt; (forall a. Eq a =&gt; a -&gt; t a -&gt; Bool)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Ord a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; (forall a. Num a =&gt; t a -&gt; a)
+-&gt; Foldable t
+product :: Oriented a -&gt; a
+$cproduct :: forall a. Num a =&gt; Oriented a -&gt; a
+sum :: Oriented a -&gt; a
+$csum :: forall a. Num a =&gt; Oriented a -&gt; a
+minimum :: Oriented a -&gt; a
+$cminimum :: forall a. Ord a =&gt; Oriented a -&gt; a
+maximum :: Oriented a -&gt; a
+$cmaximum :: forall a. Ord a =&gt; Oriented a -&gt; a
+elem :: a -&gt; Oriented a -&gt; Bool
+$celem :: forall a. Eq a =&gt; a -&gt; Oriented a -&gt; Bool
+length :: Oriented a -&gt; Int
+$clength :: forall a. Oriented a -&gt; Int
+null :: Oriented a -&gt; Bool
+$cnull :: forall a. Oriented a -&gt; Bool
+toList :: Oriented a -&gt; [a]
+$ctoList :: forall a. Oriented a -&gt; [a]
+foldl1 :: (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a
+$cfoldl1 :: forall a. (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a
+foldr1 :: (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a
+$cfoldr1 :: forall a. (a -&gt; a -&gt; a) -&gt; Oriented a -&gt; a
+foldl' :: (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+$cfoldl' :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+foldl :: (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+$cfoldl :: forall b a. (b -&gt; a -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+foldr' :: (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+$cfoldr' :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+foldr :: (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+$cfoldr :: forall a b. (a -&gt; b -&gt; b) -&gt; b -&gt; Oriented a -&gt; b
+foldMap' :: (a -&gt; m) -&gt; Oriented a -&gt; m
+$cfoldMap' :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Oriented a -&gt; m
+foldMap :: (a -&gt; m) -&gt; Oriented a -&gt; m
+$cfoldMap :: forall m a. Monoid m =&gt; (a -&gt; m) -&gt; Oriented a -&gt; m
+fold :: Oriented m -&gt; m
+$cfold :: forall m. Monoid m =&gt; Oriented m -&gt; m
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Foldable</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101843"><span id="local-6989586621679101845"><span class="annot"><span class="annottext">a -&gt; Oriented b -&gt; Oriented a
+(a -&gt; b) -&gt; Oriented a -&gt; Oriented b
+(forall a b. (a -&gt; b) -&gt; Oriented a -&gt; Oriented b)
+-&gt; (forall a b. a -&gt; Oriented b -&gt; Oriented a) -&gt; Functor Oriented
+forall a b. a -&gt; Oriented b -&gt; Oriented a
+forall a b. (a -&gt; b) -&gt; Oriented a -&gt; Oriented b
+forall (f :: * -&gt; *).
+(forall a b. (a -&gt; b) -&gt; f a -&gt; f b)
+-&gt; (forall a b. a -&gt; f b -&gt; f a) -&gt; Functor f
+&lt;$ :: a -&gt; Oriented b -&gt; Oriented a
+$c&lt;$ :: forall a b. a -&gt; Oriented b -&gt; Oriented a
+fmap :: (a -&gt; b) -&gt; Oriented a -&gt; Oriented b
+$cfmap :: forall a b. (a -&gt; b) -&gt; Oriented a -&gt; Oriented b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Functor</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101827"><span id="local-6989586621679101829"><span id="local-6989586621679101831"><span id="local-6989586621679101833"><span id="local-6989586621679101835"><span id="local-6989586621679101837"><span id="local-6989586621679101839"><span class="annot"><span class="annottext">Eq (Oriented a)
+Eq (Oriented a) =&gt;
+(Oriented a -&gt; Oriented a -&gt; Ordering)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Bool)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Bool)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Bool)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Bool)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Oriented a)
+-&gt; (Oriented a -&gt; Oriented a -&gt; Oriented a)
+-&gt; Ord (Oriented a)
+Oriented a -&gt; Oriented a -&gt; Bool
+Oriented a -&gt; Oriented a -&gt; Ordering
+Oriented a -&gt; Oriented a -&gt; Oriented a
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+forall a. Ord a =&gt; Eq (Oriented a)
+forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Ordering
+forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Oriented a
+min :: Oriented a -&gt; Oriented a -&gt; Oriented a
+$cmin :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Oriented a
+max :: Oriented a -&gt; Oriented a -&gt; Oriented a
+$cmax :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Oriented a
+&gt;= :: Oriented a -&gt; Oriented a -&gt; Bool
+$c&gt;= :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+&gt; :: Oriented a -&gt; Oriented a -&gt; Bool
+$c&gt; :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+&lt;= :: Oriented a -&gt; Oriented a -&gt; Bool
+$c&lt;= :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+&lt; :: Oriented a -&gt; Oriented a -&gt; Bool
+$c&lt; :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Bool
+compare :: Oriented a -&gt; Oriented a -&gt; Ordering
+$ccompare :: forall a. Ord a =&gt; Oriented a -&gt; Oriented a -&gt; Ordering
+$cp1Ord :: forall a. Ord a =&gt; Eq (Oriented a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101819"><span id="local-6989586621679101821"><span id="local-6989586621679101823"><span id="local-6989586621679101825"><span class="annot"><span class="annottext">ReadPrec [Oriented a]
+ReadPrec (Oriented a)
+Int -&gt; ReadS (Oriented a)
+ReadS [Oriented a]
+(Int -&gt; ReadS (Oriented a))
+-&gt; ReadS [Oriented a]
+-&gt; ReadPrec (Oriented a)
+-&gt; ReadPrec [Oriented a]
+-&gt; Read (Oriented a)
+forall a. Read a =&gt; ReadPrec [Oriented a]
+forall a. Read a =&gt; ReadPrec (Oriented a)
+forall a. Read a =&gt; Int -&gt; ReadS (Oriented a)
+forall a. Read a =&gt; ReadS [Oriented a]
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Oriented a]
+$creadListPrec :: forall a. Read a =&gt; ReadPrec [Oriented a]
+readPrec :: ReadPrec (Oriented a)
+$creadPrec :: forall a. Read a =&gt; ReadPrec (Oriented a)
+readList :: ReadS [Oriented a]
+$creadList :: forall a. Read a =&gt; ReadS [Oriented a]
+readsPrec :: Int -&gt; ReadS (Oriented a)
+$creadsPrec :: forall a. Read a =&gt; Int -&gt; ReadS (Oriented a)
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101813"><span id="local-6989586621679101815"><span id="local-6989586621679101817"><span class="annot"><span class="annottext">Int -&gt; Oriented a -&gt; ShowS
+[Oriented a] -&gt; ShowS
+Oriented a -&gt; String
+(Int -&gt; Oriented a -&gt; ShowS)
+-&gt; (Oriented a -&gt; String)
+-&gt; ([Oriented a] -&gt; ShowS)
+-&gt; Show (Oriented a)
+forall a. Show a =&gt; Int -&gt; Oriented a -&gt; ShowS
+forall a. Show a =&gt; [Oriented a] -&gt; ShowS
+forall a. Show a =&gt; Oriented a -&gt; String
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Oriented a] -&gt; ShowS
+$cshowList :: forall a. Show a =&gt; [Oriented a] -&gt; ShowS
+show :: Oriented a -&gt; String
+$cshow :: forall a. Show a =&gt; Oriented a -&gt; String
+showsPrec :: Int -&gt; Oriented a -&gt; ShowS
+$cshowsPrec :: forall a. Show a =&gt; Int -&gt; Oriented a -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101803"><span id="local-6989586621679101805"><span id="local-6989586621679101807"><span id="local-6989586621679101809"><span class="annot"><span class="annottext">Functor Oriented
+Foldable Oriented
+(Functor Oriented, Foldable Oriented) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; Oriented a -&gt; f (Oriented b))
+-&gt; (forall (f :: * -&gt; *) a.
+    Applicative f =&gt;
+    Oriented (f a) -&gt; f (Oriented a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; Oriented a -&gt; m (Oriented b))
+-&gt; (forall (m :: * -&gt; *) a.
+    Monad m =&gt;
+    Oriented (m a) -&gt; m (Oriented a))
+-&gt; Traversable Oriented
+(a -&gt; f b) -&gt; Oriented a -&gt; f (Oriented b)
+forall (t :: * -&gt; *).
+(Functor t, Foldable t) =&gt;
+(forall (f :: * -&gt; *) a b.
+ Applicative f =&gt;
+ (a -&gt; f b) -&gt; t a -&gt; f (t b))
+-&gt; (forall (f :: * -&gt; *) a. Applicative f =&gt; t (f a) -&gt; f (t a))
+-&gt; (forall (m :: * -&gt; *) a b.
+    Monad m =&gt;
+    (a -&gt; m b) -&gt; t a -&gt; m (t b))
+-&gt; (forall (m :: * -&gt; *) a. Monad m =&gt; t (m a) -&gt; m (t a))
+-&gt; Traversable t
+forall (m :: * -&gt; *) a. Monad m =&gt; Oriented (m a) -&gt; m (Oriented a)
+forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Oriented (f a) -&gt; f (Oriented a)
+forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Oriented a -&gt; m (Oriented b)
+forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Oriented a -&gt; f (Oriented b)
+sequence :: Oriented (m a) -&gt; m (Oriented a)
+$csequence :: forall (m :: * -&gt; *) a. Monad m =&gt; Oriented (m a) -&gt; m (Oriented a)
+mapM :: (a -&gt; m b) -&gt; Oriented a -&gt; m (Oriented b)
+$cmapM :: forall (m :: * -&gt; *) a b.
+Monad m =&gt;
+(a -&gt; m b) -&gt; Oriented a -&gt; m (Oriented b)
+sequenceA :: Oriented (f a) -&gt; f (Oriented a)
+$csequenceA :: forall (f :: * -&gt; *) a.
+Applicative f =&gt;
+Oriented (f a) -&gt; f (Oriented a)
+traverse :: (a -&gt; f b) -&gt; Oriented a -&gt; f (Oriented b)
+$ctraverse :: forall (f :: * -&gt; *) a b.
+Applicative f =&gt;
+(a -&gt; f b) -&gt; Oriented a -&gt; f (Oriented b)
+$cp2Traversable :: Foldable Oriented
+$cp1Traversable :: Functor Oriented
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Traversable</span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- | Possible rotations of a unicode character if that character can be rotated</span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- over 0, 90, 180, and 270 degrees.</span><span>
+</span><span id="line-43"></span><span class="hs-keyword">data</span><span> </span><span id="Rotate90"><span class="annot"><a href="Data.Char.Core.html#Rotate90"><span class="hs-identifier hs-var">Rotate90</span></a></span></span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="R0"><span class="annot"><a href="Data.Char.Core.html#R0"><span class="hs-identifier hs-var">R0</span></a></span></span><span> </span><span class="hs-comment">-- ^ No rotation.</span><span>
+</span><span id="line-45"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="R90"><span class="annot"><a href="Data.Char.Core.html#R90"><span class="hs-identifier hs-var">R90</span></a></span></span><span> </span><span class="hs-comment">-- ^ Rotation over /90/ degrees.</span><span>
+</span><span id="line-46"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="R180"><span class="annot"><a href="Data.Char.Core.html#R180"><span class="hs-identifier hs-var">R180</span></a></span></span><span> </span><span class="hs-comment">-- ^ Rotation over /180/ degrees.</span><span>
+</span><span id="line-47"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="R270"><span class="annot"><a href="Data.Char.Core.html#R270"><span class="hs-identifier hs-var">R270</span></a></span></span><span> </span><span class="hs-comment">-- ^ Rotation over /270/ degrees.</span><span>
+</span><span id="line-48"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679101798"><span id="local-6989586621679101800"><span class="annot"><span class="annottext">Rotate90
+Rotate90 -&gt; Rotate90 -&gt; Bounded Rotate90
+forall a. a -&gt; a -&gt; Bounded a
+maxBound :: Rotate90
+$cmaxBound :: Rotate90
+minBound :: Rotate90
+$cminBound :: Rotate90
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101782"><span id="local-6989586621679101784"><span id="local-6989586621679101786"><span id="local-6989586621679101788"><span id="local-6989586621679101790"><span id="local-6989586621679101792"><span id="local-6989586621679101794"><span id="local-6989586621679101796"><span class="annot"><span class="annottext">Int -&gt; Rotate90
+Rotate90 -&gt; Int
+Rotate90 -&gt; [Rotate90]
+Rotate90 -&gt; Rotate90
+Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+Rotate90 -&gt; Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+(Rotate90 -&gt; Rotate90)
+-&gt; (Rotate90 -&gt; Rotate90)
+-&gt; (Int -&gt; Rotate90)
+-&gt; (Rotate90 -&gt; Int)
+-&gt; (Rotate90 -&gt; [Rotate90])
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; [Rotate90])
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; [Rotate90])
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Rotate90 -&gt; [Rotate90])
+-&gt; Enum Rotate90
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: Rotate90 -&gt; Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+$cenumFromThenTo :: Rotate90 -&gt; Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+enumFromTo :: Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+$cenumFromTo :: Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+enumFromThen :: Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+$cenumFromThen :: Rotate90 -&gt; Rotate90 -&gt; [Rotate90]
+enumFrom :: Rotate90 -&gt; [Rotate90]
+$cenumFrom :: Rotate90 -&gt; [Rotate90]
+fromEnum :: Rotate90 -&gt; Int
+$cfromEnum :: Rotate90 -&gt; Int
+toEnum :: Int -&gt; Rotate90
+$ctoEnum :: Int -&gt; Rotate90
+pred :: Rotate90 -&gt; Rotate90
+$cpred :: Rotate90 -&gt; Rotate90
+succ :: Rotate90 -&gt; Rotate90
+$csucc :: Rotate90 -&gt; Rotate90
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101778"><span id="local-6989586621679101780"><span class="annot"><span class="annottext">Rotate90 -&gt; Rotate90 -&gt; Bool
+(Rotate90 -&gt; Rotate90 -&gt; Bool)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Bool) -&gt; Eq Rotate90
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c/= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+== :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c== :: Rotate90 -&gt; Rotate90 -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101763"><span id="local-6989586621679101765"><span id="local-6989586621679101767"><span id="local-6989586621679101769"><span id="local-6989586621679101771"><span id="local-6989586621679101773"><span id="local-6989586621679101775"><span class="annot"><span class="annottext">Eq Rotate90
+Eq Rotate90 =&gt;
+(Rotate90 -&gt; Rotate90 -&gt; Ordering)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Bool)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Bool)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Bool)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Bool)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Rotate90)
+-&gt; (Rotate90 -&gt; Rotate90 -&gt; Rotate90)
+-&gt; Ord Rotate90
+Rotate90 -&gt; Rotate90 -&gt; Bool
+Rotate90 -&gt; Rotate90 -&gt; Ordering
+Rotate90 -&gt; Rotate90 -&gt; Rotate90
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Rotate90 -&gt; Rotate90 -&gt; Rotate90
+$cmin :: Rotate90 -&gt; Rotate90 -&gt; Rotate90
+max :: Rotate90 -&gt; Rotate90 -&gt; Rotate90
+$cmax :: Rotate90 -&gt; Rotate90 -&gt; Rotate90
+&gt;= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c&gt;= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+&gt; :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c&gt; :: Rotate90 -&gt; Rotate90 -&gt; Bool
+&lt;= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c&lt;= :: Rotate90 -&gt; Rotate90 -&gt; Bool
+&lt; :: Rotate90 -&gt; Rotate90 -&gt; Bool
+$c&lt; :: Rotate90 -&gt; Rotate90 -&gt; Bool
+compare :: Rotate90 -&gt; Rotate90 -&gt; Ordering
+$ccompare :: Rotate90 -&gt; Rotate90 -&gt; Ordering
+$cp1Ord :: Eq Rotate90
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101755"><span id="local-6989586621679101757"><span id="local-6989586621679101759"><span id="local-6989586621679101761"><span class="annot"><span class="annottext">ReadPrec [Rotate90]
+ReadPrec Rotate90
+Int -&gt; ReadS Rotate90
+ReadS [Rotate90]
+(Int -&gt; ReadS Rotate90)
+-&gt; ReadS [Rotate90]
+-&gt; ReadPrec Rotate90
+-&gt; ReadPrec [Rotate90]
+-&gt; Read Rotate90
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Rotate90]
+$creadListPrec :: ReadPrec [Rotate90]
+readPrec :: ReadPrec Rotate90
+$creadPrec :: ReadPrec Rotate90
+readList :: ReadS [Rotate90]
+$creadList :: ReadS [Rotate90]
+readsPrec :: Int -&gt; ReadS Rotate90
+$creadsPrec :: Int -&gt; ReadS Rotate90
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101749"><span id="local-6989586621679101751"><span id="local-6989586621679101753"><span class="annot"><span class="annottext">Int -&gt; Rotate90 -&gt; ShowS
+[Rotate90] -&gt; ShowS
+Rotate90 -&gt; String
+(Int -&gt; Rotate90 -&gt; ShowS)
+-&gt; (Rotate90 -&gt; String) -&gt; ([Rotate90] -&gt; ShowS) -&gt; Show Rotate90
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Rotate90] -&gt; ShowS
+$cshowList :: [Rotate90] -&gt; ShowS
+show :: Rotate90 -&gt; String
+$cshow :: Rotate90 -&gt; String
+showsPrec :: Int -&gt; Rotate90 -&gt; ShowS
+$cshowsPrec :: Int -&gt; Rotate90 -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="hs-comment">-- | Specify if one should ligate, or not. When litigation is done</span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- characters that are normally written in two (or more) characters</span><span>
+</span><span id="line-52"></span><span class="hs-comment">-- are combined in one character. For example @&#8546;@ instead of @&#8544;&#8544;&#8544;@.</span><span>
+</span><span id="line-53"></span><span class="hs-keyword">data</span><span> </span><span id="Ligate"><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-var">Ligate</span></a></span></span><span>
+</span><span id="line-54"></span><span>  </span><span class="hs-glyph">=</span><span> </span><span id="Ligate"><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-var">Ligate</span></a></span></span><span> </span><span class="hs-comment">-- ^ A ligate operation is performed on the characters.</span><span>
+</span><span id="line-55"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span id="NoLigate"><span class="annot"><a href="Data.Char.Core.html#NoLigate"><span class="hs-identifier hs-var">NoLigate</span></a></span></span><span> </span><span class="hs-comment">-- ^ No ligate operation is performed on the charaters.</span><span>
+</span><span id="line-56"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679101745"><span id="local-6989586621679101747"><span class="annot"><span class="annottext">Ligate
+Ligate -&gt; Ligate -&gt; Bounded Ligate
+forall a. a -&gt; a -&gt; Bounded a
+maxBound :: Ligate
+$cmaxBound :: Ligate
+minBound :: Ligate
+$cminBound :: Ligate
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Bounded</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101729"><span id="local-6989586621679101731"><span id="local-6989586621679101733"><span id="local-6989586621679101735"><span id="local-6989586621679101737"><span id="local-6989586621679101739"><span id="local-6989586621679101741"><span id="local-6989586621679101743"><span class="annot"><span class="annottext">Int -&gt; Ligate
+Ligate -&gt; Int
+Ligate -&gt; [Ligate]
+Ligate -&gt; Ligate
+Ligate -&gt; Ligate -&gt; [Ligate]
+Ligate -&gt; Ligate -&gt; Ligate -&gt; [Ligate]
+(Ligate -&gt; Ligate)
+-&gt; (Ligate -&gt; Ligate)
+-&gt; (Int -&gt; Ligate)
+-&gt; (Ligate -&gt; Int)
+-&gt; (Ligate -&gt; [Ligate])
+-&gt; (Ligate -&gt; Ligate -&gt; [Ligate])
+-&gt; (Ligate -&gt; Ligate -&gt; [Ligate])
+-&gt; (Ligate -&gt; Ligate -&gt; Ligate -&gt; [Ligate])
+-&gt; Enum Ligate
+forall a.
+(a -&gt; a)
+-&gt; (a -&gt; a)
+-&gt; (Int -&gt; a)
+-&gt; (a -&gt; Int)
+-&gt; (a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; [a])
+-&gt; (a -&gt; a -&gt; a -&gt; [a])
+-&gt; Enum a
+enumFromThenTo :: Ligate -&gt; Ligate -&gt; Ligate -&gt; [Ligate]
+$cenumFromThenTo :: Ligate -&gt; Ligate -&gt; Ligate -&gt; [Ligate]
+enumFromTo :: Ligate -&gt; Ligate -&gt; [Ligate]
+$cenumFromTo :: Ligate -&gt; Ligate -&gt; [Ligate]
+enumFromThen :: Ligate -&gt; Ligate -&gt; [Ligate]
+$cenumFromThen :: Ligate -&gt; Ligate -&gt; [Ligate]
+enumFrom :: Ligate -&gt; [Ligate]
+$cenumFrom :: Ligate -&gt; [Ligate]
+fromEnum :: Ligate -&gt; Int
+$cfromEnum :: Ligate -&gt; Int
+toEnum :: Int -&gt; Ligate
+$ctoEnum :: Int -&gt; Ligate
+pred :: Ligate -&gt; Ligate
+$cpred :: Ligate -&gt; Ligate
+succ :: Ligate -&gt; Ligate
+$csucc :: Ligate -&gt; Ligate
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101725"><span id="local-6989586621679101727"><span class="annot"><span class="annottext">Ligate -&gt; Ligate -&gt; Bool
+(Ligate -&gt; Ligate -&gt; Bool)
+-&gt; (Ligate -&gt; Ligate -&gt; Bool) -&gt; Eq Ligate
+forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
+/= :: Ligate -&gt; Ligate -&gt; Bool
+$c/= :: Ligate -&gt; Ligate -&gt; Bool
+== :: Ligate -&gt; Ligate -&gt; Bool
+$c== :: Ligate -&gt; Ligate -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101710"><span id="local-6989586621679101712"><span id="local-6989586621679101714"><span id="local-6989586621679101716"><span id="local-6989586621679101718"><span id="local-6989586621679101720"><span id="local-6989586621679101722"><span class="annot"><span class="annottext">Eq Ligate
+Eq Ligate =&gt;
+(Ligate -&gt; Ligate -&gt; Ordering)
+-&gt; (Ligate -&gt; Ligate -&gt; Bool)
+-&gt; (Ligate -&gt; Ligate -&gt; Bool)
+-&gt; (Ligate -&gt; Ligate -&gt; Bool)
+-&gt; (Ligate -&gt; Ligate -&gt; Bool)
+-&gt; (Ligate -&gt; Ligate -&gt; Ligate)
+-&gt; (Ligate -&gt; Ligate -&gt; Ligate)
+-&gt; Ord Ligate
+Ligate -&gt; Ligate -&gt; Bool
+Ligate -&gt; Ligate -&gt; Ordering
+Ligate -&gt; Ligate -&gt; Ligate
+forall a.
+Eq a =&gt;
+(a -&gt; a -&gt; Ordering)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; Bool)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; (a -&gt; a -&gt; a)
+-&gt; Ord a
+min :: Ligate -&gt; Ligate -&gt; Ligate
+$cmin :: Ligate -&gt; Ligate -&gt; Ligate
+max :: Ligate -&gt; Ligate -&gt; Ligate
+$cmax :: Ligate -&gt; Ligate -&gt; Ligate
+&gt;= :: Ligate -&gt; Ligate -&gt; Bool
+$c&gt;= :: Ligate -&gt; Ligate -&gt; Bool
+&gt; :: Ligate -&gt; Ligate -&gt; Bool
+$c&gt; :: Ligate -&gt; Ligate -&gt; Bool
+&lt;= :: Ligate -&gt; Ligate -&gt; Bool
+$c&lt;= :: Ligate -&gt; Ligate -&gt; Bool
+&lt; :: Ligate -&gt; Ligate -&gt; Bool
+$c&lt; :: Ligate -&gt; Ligate -&gt; Bool
+compare :: Ligate -&gt; Ligate -&gt; Ordering
+$ccompare :: Ligate -&gt; Ligate -&gt; Ordering
+$cp1Ord :: Eq Ligate
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101702"><span id="local-6989586621679101704"><span id="local-6989586621679101706"><span id="local-6989586621679101708"><span class="annot"><span class="annottext">ReadPrec [Ligate]
+ReadPrec Ligate
+Int -&gt; ReadS Ligate
+ReadS [Ligate]
+(Int -&gt; ReadS Ligate)
+-&gt; ReadS [Ligate]
+-&gt; ReadPrec Ligate
+-&gt; ReadPrec [Ligate]
+-&gt; Read Ligate
+forall a.
+(Int -&gt; ReadS a)
+-&gt; ReadS [a] -&gt; ReadPrec a -&gt; ReadPrec [a] -&gt; Read a
+readListPrec :: ReadPrec [Ligate]
+$creadListPrec :: ReadPrec [Ligate]
+readPrec :: ReadPrec Ligate
+$creadPrec :: ReadPrec Ligate
+readList :: ReadS [Ligate]
+$creadList :: ReadS [Ligate]
+readsPrec :: Int -&gt; ReadS Ligate
+$creadsPrec :: Int -&gt; ReadS Ligate
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Read</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621679101696"><span id="local-6989586621679101698"><span id="local-6989586621679101700"><span class="annot"><span class="annottext">Int -&gt; Ligate -&gt; ShowS
+[Ligate] -&gt; ShowS
+Ligate -&gt; String
+(Int -&gt; Ligate -&gt; ShowS)
+-&gt; (Ligate -&gt; String) -&gt; ([Ligate] -&gt; ShowS) -&gt; Show Ligate
+forall a.
+(Int -&gt; a -&gt; ShowS) -&gt; (a -&gt; String) -&gt; ([a] -&gt; ShowS) -&gt; Show a
+showList :: [Ligate] -&gt; ShowS
+$cshowList :: [Ligate] -&gt; ShowS
+show :: Ligate -&gt; String
+$cshow :: Ligate -&gt; String
+showsPrec :: Int -&gt; Ligate -&gt; ShowS
+$cshowsPrec :: Int -&gt; Ligate -&gt; ShowS
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="hs-comment">-- | Specify if the given ligate function should be performed on the input,</span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- if 'v:Ligate' is passed, and the /identity/ function otherwise.</span><span>
+</span><span id="line-60"></span><span id="local-6989586621679101997"><span class="annot"><a href="Data.Char.Core.html#ligate"><span class="hs-identifier hs-type">ligate</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679101997"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101997"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-type">Ligate</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101997"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101997"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-61"></span><span id="ligate"><span class="annot"><span class="annottext">ligate :: (a -&gt; a) -&gt; Ligate -&gt; a -&gt; a
+</span><a href="Data.Char.Core.html#ligate"><span class="hs-identifier hs-var hs-var">ligate</span></a></span></span><span> </span><span id="local-6989586621679101695"><span class="annot"><span class="annottext">f :: a -&gt; a
+</span><a href="#local-6989586621679101695"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-type">Ligate</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+</span><a href="#local-6989586621679101695"><span class="hs-identifier hs-var">f</span></a></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="Data.Char.Core.html#ligate"><span class="hs-identifier hs-var">ligate</span></a></span><span> </span><span class="hs-identifier">_</span><span> </span><span class="annot"><a href="Data.Char.Core.html#NoLigate"><span class="hs-identifier hs-type">NoLigate</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; a
+forall a. a -&gt; a
+</span><span class="hs-identifier hs-var">id</span></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="hs-comment">-- | Specify if the given ligate function is performed over the functor object</span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- if 'v:Ligate' is passed, and the /identity/ function otherwise.</span><span>
+</span><span id="line-66"></span><span id="local-6989586621679101692"><span id="local-6989586621679101693"><span class="annot"><a href="Data.Char.Core.html#ligateF"><span class="hs-identifier hs-type">ligateF</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Functor</span></span><span> </span><span class="annot"><a href="#local-6989586621679101693"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679101692"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101692"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-type">Ligate</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101693"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679101692"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621679101693"><span class="hs-identifier hs-type">f</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679101692"><span class="hs-identifier hs-type">a</span></a></span></span></span><span>
+</span><span id="line-67"></span><span id="ligateF"><span class="annot"><span class="annottext">ligateF :: (a -&gt; a) -&gt; Ligate -&gt; f a -&gt; f a
+</span><a href="Data.Char.Core.html#ligateF"><span class="hs-identifier hs-var hs-var">ligateF</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(f a -&gt; f a) -&gt; Ligate -&gt; f a -&gt; f a
+forall a. (a -&gt; a) -&gt; Ligate -&gt; a -&gt; a
+</span><a href="Data.Char.Core.html#ligate"><span class="hs-identifier hs-var">ligate</span></a></span><span> </span><span class="annot"><span class="annottext">((f a -&gt; f a) -&gt; Ligate -&gt; f a -&gt; f a)
+-&gt; ((a -&gt; a) -&gt; f a -&gt; f a) -&gt; (a -&gt; a) -&gt; Ligate -&gt; f a -&gt; f a
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; a) -&gt; f a -&gt; f a
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-identifier hs-var">fmap</span></span><span>
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679101688"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Orientation"><span class="hs-identifier hs-type">Orientation</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-70"></span><span>    </span><span id="local-6989586621679101686"><span class="annot"><span class="annottext">arbitrary :: Gen Orientation
+</span><a href="#local-6989586621679101686"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen Orientation
+forall a. (Bounded a, Enum a) =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitraryBoundedEnum</span></span><span>
+</span><span id="line-71"></span><span>
+</span><span id="line-72"></span><span id="local-6989586621679101685"><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679101682"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="#local-6989586621679101685"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier hs-type">Oriented</span></a></span><span> </span><span class="annot"><a href="#local-6989586621679101685"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-73"></span><span>    </span><span id="local-6989586621679101681"><span class="annot"><span class="annottext">arbitrary :: Gen (Oriented a)
+</span><a href="#local-6989586621679101681"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen (Oriented a)
+forall (f :: * -&gt; *) a. (Arbitrary1 f, Arbitrary a) =&gt; Gen (f a)
+</span><span class="hs-identifier hs-var">arbitrary1</span></span></span><span>
+</span><span id="line-74"></span><span>
+</span><span id="line-75"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679101678"><span class="annot"><span class="hs-identifier hs-type">Arbitrary1</span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier hs-type">Oriented</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-76"></span><span>    </span><span id="local-6989586621679101676"><span class="annot"><span class="annottext">liftArbitrary :: Gen a -&gt; Gen (Oriented a)
+</span><a href="#local-6989586621679101676"><span class="hs-identifier hs-var hs-var hs-var hs-var">liftArbitrary</span></a></span></span><span> </span><span id="local-6989586621679101675"><span class="annot"><span class="annottext">arb :: Gen a
+</span><a href="#local-6989586621679101675"><span class="hs-identifier hs-var">arb</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">a -&gt; Orientation -&gt; Oriented a
+forall a. a -&gt; Orientation -&gt; Oriented a
+</span><a href="Data.Char.Core.html#Oriented"><span class="hs-identifier hs-var">Oriented</span></a></span><span> </span><span class="annot"><span class="annottext">(a -&gt; Orientation -&gt; Oriented a)
+-&gt; Gen a -&gt; Gen (Orientation -&gt; Oriented a)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen a
+</span><a href="#local-6989586621679101675"><span class="hs-identifier hs-var">arb</span></a></span><span> </span><span class="annot"><span class="annottext">Gen (Orientation -&gt; Oriented a)
+-&gt; Gen Orientation -&gt; Gen (Oriented a)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Gen Orientation
+forall a. Arbitrary a =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitrary</span></span><span>
+</span><span id="line-77"></span><span>
+</span><span id="line-78"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679101671"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Rotate90"><span class="hs-identifier hs-type">Rotate90</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-79"></span><span>    </span><span id="local-6989586621679101670"><span class="annot"><span class="annottext">arbitrary :: Gen Rotate90
+</span><a href="#local-6989586621679101670"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen Rotate90
+forall a. (Bounded a, Enum a) =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitraryBoundedEnum</span></span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679101667"><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-type">Ligate</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-82"></span><span>    </span><span id="local-6989586621679101666"><span class="annot"><span class="annottext">arbitrary :: Gen Ligate
+</span><a href="#local-6989586621679101666"><span class="hs-identifier hs-var hs-var hs-var hs-var">arbitrary</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Gen Ligate
+forall a. (Bounded a, Enum a) =&gt; Gen a
+</span><span class="hs-identifier hs-var">arbitraryBoundedEnum</span></span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Default</span></span><span> </span><span class="annot"><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-type">Ligate</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-85"></span><span>    </span><span id="local-6989586621679101663"><span class="annot"><span class="annottext">def :: Ligate
+</span><a href="#local-6989586621679101663"><span class="hs-identifier hs-var hs-var hs-var hs-var">def</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Ligate
+</span><a href="Data.Char.Core.html#Ligate"><span class="hs-identifier hs-var">Ligate</span></a></span><span>
+</span><span id="line-86"></span></pre></body></html>
